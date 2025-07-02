@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    }
+
+                    <form asp-action="Login" method="post">
+                        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input name="email" type="email" class="form-control" required placeholder="Ingrese su email" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input name="contraseña" type="password" class="form-control" required placeholder="Ingrese su contraseña" />
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input name="rememberMe" type="checkbox" class="form-check-input" />
+                            <label class="form-check-label">Recordarme</label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p>¿No tienes cuenta? <a href="@Url.Action("Register", "Account")">Regístrate aquí</a></p>
+                    </div>
+
+                    @if (ViewData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger mt-3">
+                            @ViewData["ErrorMessage"]
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

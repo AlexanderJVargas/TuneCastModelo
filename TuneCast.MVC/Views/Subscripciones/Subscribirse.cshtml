@@ -1,0 +1,35 @@
+﻿@model List<TuneCastModelo.Plan>
+
+@{
+    ViewData["Title"] = "Elige tu plan";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Elige el plan perfecto para ti</h1>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var plan in Model)
+        {
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">@plan.Nombre</h3>
+                        <h2 class="my-4">$@plan.Precio<span class="text-muted">/mes</span></h2>
+                        <p class="card-text">@plan.Descripcion</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pb-4">
+                        <form asp-action="Subscribe" method="post">
+                            <input type="hidden" name="planId" value="@plan.Id" />
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Suscribirse
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
