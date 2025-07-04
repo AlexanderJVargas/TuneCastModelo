@@ -8,6 +8,11 @@ namespace TuneCast.MVC.Controllers
 {
     public class PlanesController : Controller
     {
+        public ActionResult Dashboard()
+        {
+            var planes = Crud<Plan>.GetAll();
+            return View(planes);
+        }
         // GET: PlanesController
         public ActionResult Index()
         {
@@ -30,11 +35,12 @@ namespace TuneCast.MVC.Controllers
 
         // POST: PlanesController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Create(Plan data)
         {
             try
             {
+                // Calcular precio con IVA
+                data.Precio = data.Precio * 1.15;
                 Crud<Plan>.Create(data);
                 return RedirectToAction(nameof(Index));
             }

@@ -1,53 +1,693 @@
-﻿@model IEnumerable<TuneCastModelo.Plan>
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuneCast - Gestión de Planes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #8B5CF6;
+            --secondary-color: #06B6D4;
+            --accent-color: #F59E0B;
+            --dark-bg: #1F2937;
+            --light-bg: #F8FAFC;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --success-color: #10B981;
+            --danger-color: #EF4444;
+        }
 
-@{
-    ViewData["Title"] = "Index";
-}
+        body {
+            background: linear-gradient(135deg, var(--light-bg) 0%, #E5E7EB 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
 
-<h1>Index</h1>
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Precio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripcion)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 2rem 2rem;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .plan-card.featured {
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .plan-card.featured::before {
+            content: "MÁS POPULAR";
+            position: absolute;
+            top: 1rem;
+            right: -2rem;
+            background: var(--accent-color);
+            color: white;
+            padding: 0.5rem 3rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+            z-index: 10;
+        }
+
+        .plan-header {
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .plan-header.personal {
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+        }
+
+        .plan-header.familiar {
+            background: linear-gradient(135deg, #06B6D4 0%, #67E8F9 100%);
+        }
+
+        .plan-header.empresarial {
+            background: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);
+        }
+
+        .plan-icon {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .plan-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-users {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .plan-body {
+            padding: 2rem;
+        }
+
+        .price-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .price-original {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            text-decoration: line-through;
+        }
+
+        .price-final {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0.5rem 0;
+        }
+
+        .price-period {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .tax-info {
+            background: #F3F4F6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .tax-info small {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        .features-list li i {
+            color: var(--success-color);
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-plan.personal {
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-plan.familiar {
+            background: linear-gradient(135deg, #06B6D4 0%, #67E8F9 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-plan.empresarial {
+            background: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-plan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-actions {
+            background: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .admin-actions h3 {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .btn-admin {
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        
+
+        .plans-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .plan-card.featured {
+            transform: none;
+        }
+
+        }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-music me-2"></i>
+                TuneCast
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="#" onclick="showAllPlans()">
+                    <i class="fas fa-eye me-1"></i>
+                    Ver Planes
+                </a>
+                <a class="nav-link text-white" href="#" onclick="showCreateForm()">
+                    <i class="fas fa-plus me-1"></i>
+                    Crear Plan
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-crown me-3"></i>Gestión de Planes</h1>
+                    <p class="lead">Administra los planes de suscripción de TuneCast con precios actualizados incluyendo IVA del 15%</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="stat-card d-inline-block">
+                        <div class="stat-icon text-warning">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-value">15%</div>
+                        <div class="stat-label">IVA Incluido</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon text-primary">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Planes Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon text-success">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value">$39.50</div>
+                <div class="stat-label">Precio Máximo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon text-info">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-value">50</div>
+                <div class="stat-label">Máx. Usuarios</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon text-warning">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Disponibilidad</div>
+            </div>
+        </div>
+
+        <!-- Acciones de Administrador -->
+        <div class="admin-actions">
+            <h3><i class="fas fa-tools me-2"></i>Acciones de Administrador</h3>
+            <button class="btn btn-success btn-admin" onclick="showCreateForm()">
+                <i class="fas fa-plus me-2"></i>Crear Nuevo Plan
+            </button>
+            <button class="btn btn-primary btn-admin" onclick="showAllPlans()">
+                <i class="fas fa-list me-2"></i>Ver Todos los Planes
+            </button>
+            <button class="btn btn-info btn-admin" onclick="updatePrices()">
+                <i class="fas fa-calculator me-2"></i>Actualizar Precios
+            </button>
+            <button class="btn btn-warning btn-admin" onclick="exportPlans()">
+                <i class="fas fa-download me-2"></i>Exportar Planes
+            </button>
+        </div>
+
+        <!-- Grid de Planes -->
+        <div class="plans-grid">
+            <!-- Plan Personal -->
+            <div class="plan-card">
+                <div class="plan-header personal">
+                    <div class="plan-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="plan-name">Personal</div>
+                    <div class="plan-users">1 Usuario</div>
+                </div>
+                <div class="plan-body">
+                    <div class="price-section">
+                        <div class="price-original">$1.00</div>
+                        <div class="price-final">$1.15</div>
+                        <div class="price-period">por mes</div>
+                    </div>
+                    <div class="tax-info">
+                        <small>Precio base: $1.00 + IVA (15%): $0.15</small>
+                    </div>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> Acceso básico a la plataforma</li>
+                        <li><i class="fas fa-check"></i> Streaming de música ilimitado</li>
+                        <li><i class="fas fa-check"></i> Calidad estándar</li>
+                        <li><i class="fas fa-check"></i> Playlists personalizadas</li>
+                        <li><i class="fas fa-check"></i> Soporte por email</li>
+                    </ul>
+                    <button class="btn btn-plan personal" onclick="editPlan(1, 'Personal')">
+                        <i class="fas fa-edit me-2"></i>Editar Plan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Plan Familiar -->
+            <div class="plan-card featured">
+                <div class="plan-header familiar">
+                    <div class="plan-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="plan-name">Familiar</div>
+                    <div class="plan-users">4 Usuarios</div>
+                </div>
+                <div class="plan-body">
+                    <div class="price-section">
+                        <div class="price-original">$3.50</div>
+                        <div class="price-final">$4.03</div>
+                        <div class="price-period">por mes</div>
+                    </div>
+                    <div class="tax-info">
+                        <small>Precio base: $3.50 + IVA (15%): $0.53</small>
+                    </div>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> Todas las funciones del plan Personal</li>
+                        <li><i class="fas fa-check"></i> Hasta 4 cuentas familiares</li>
+                        <li><i class="fas fa-check"></i> Calidad HD</li>
+                        <li><i class="fas fa-check"></i> Descargas offline</li>
+                        <li><i class="fas fa-check"></i> Sin anuncios</li>
+                        <li><i class="fas fa-check"></i> Soporte prioritario</li>
+                    </ul>
+                    <button class="btn btn-plan familiar" onclick="editPlan(2, 'Familiar')">
+                        <i class="fas fa-edit me-2"></i>Editar Plan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Plan Empresarial -->
+            <div class="plan-card">
+                <div class="plan-header empresarial">
+                    <div class="plan-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="plan-name">Empresarial</div>
+                    <div class="plan-users">50 Usuarios</div>
+                </div>
+                <div class="plan-body">
+                    <div class="price-section">
+                        <div class="price-original">$35.00</div>
+                        <div class="price-final">$40.25</div>
+                        <div class="price-period">por mes</div>
+                    </div>
+                    <div class="tax-info">
+                        <small>Precio base: $35.00 + IVA (15%): $5.25</small>
+                    </div>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> Todas las funciones del plan Familiar</li>
+                        <li><i class="fas fa-check"></i> Hasta 50 usuarios empresariales</li>
+                        <li><i class="fas fa-check"></i> Calidad Ultra HD</li>
+                        <li><i class="fas fa-check"></i> Análisis y reportes</li>
+                        <li><i class="fas fa-check"></i> API empresarial</li>
+                        <li><i class="fas fa-check"></i> Soporte 24/7</li>
+                        <li><i class="fas fa-check"></i> Gestión centralizada</li>
+                    </ul>
+                    <button class="btn btn-plan empresarial" onclick="editPlan(3, 'Empresarial')">
+                        <i class="fas fa-edit me-2"></i>Editar Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar plan -->
+    <div class="modal fade" id="planModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i class="fas fa-plus me-2"></i>Crear Nuevo Plan
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="planForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="planName" class="form-label">Nombre del Plan</label>
+                                    <input type="text" class="form-control" id="planName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="planPrice" class="form-label">Precio Base ($)</label>
+                                    <input type="number" class="form-control" id="planPrice" step="0.01" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="planDescription" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="planDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Precio con IVA (15%)</label>
+                                    <input type="text" class="form-control" id="priceWithTax" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">IVA ($)</label>
+                                    <input type="text" class="form-control" id="taxAmount" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="savePlan()">
+                        <i class="fas fa-save me-2"></i>Guardar Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let editingPlanId = null;
+        const TAX_RATE = 0.15; // 15% IVA
+
+        // Función para mostrar el formulario de creación
+        function showCreateForm() {
+            editingPlanId = null;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus me-2"></i>Crear Nuevo Plan';
+            document.getElementById('planForm').reset();
+            document.getElementById('priceWithTax').value = '';
+            document.getElementById('taxAmount').value = '';
+            new bootstrap.Modal(document.getElementById('planModal')).show();
+        }
+
+        // Función para editar un plan
+        function editPlan(planId, planName) {
+            editingPlanId = planId;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Plan: ' + planName;
+
+            // Datos de ejemplo (en una aplicación real estos vendrían de tu API)
+            const planData = {
+                1: { name: 'Personal', price: 1.00, description: 'Acceso básico para un usuario' },
+                2: { name: 'Familiar', price: 3.50, description: 'Acceso completo para hasta 4 usuarios' },
+                3: { name: 'Empresarial', price: 35.00, description: 'Solución empresarial para hasta 50 usuarios' }
+            };
+
+            const plan = planData[planId];
+            if (plan) {
+                document.getElementById('planName').value = plan.name;
+                document.getElementById('planPrice').value = plan.price;
+                document.getElementById('planDescription').value = plan.description;
+                calculateTaxes();
+            }
+
+            new bootstrap.Modal(document.getElementById('planModal')).show();
+        }
+
+        // Función para calcular impuestos
+        function calculateTaxes() {
+            const basePrice = parseFloat(document.getElementById('planPrice').value) || 0;
+            const taxAmount = basePrice * TAX_RATE;
+            const priceWithTax = basePrice + taxAmount;
+
+            document.getElementById('taxAmount').value = '$' + taxAmount.toFixed(2);
+            document.getElementById('priceWithTax').value = '$' + priceWithTax.toFixed(2);
+        }
+
+        // Función para guardar el plan
+        function savePlan() {
+            const formData = {
+                name: document.getElementById('planName').value,
+                price: parseFloat(document.getElementById('planPrice').value),
+                description: document.getElementById('planDescription').value
+            };
+
+            if (!formData.name || !formData.price || !formData.description) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+
+            // Aquí harías la llamada a tu API
+            console.log('Guardando plan:', formData);
+            console.log('Plan ID:', editingPlanId);
+
+            // Simular éxito
+            alert(editingPlanId ? 'Plan actualizado exitosamente' : 'Plan creado exitosamente');
+            bootstrap.Modal.getInstance(document.getElementById('planModal')).hide();
+
+            // Recargar la página o actualizar la vista
+            location.reload();
+        }
+
+        // Función para mostrar todos los planes
+        function showAllPlans() {
+            alert('Redirigiendo a la vista de todos los planes...');
+            // Aquí podrías redirigir a /Planes/Index
+            window.location.href = '/Planes/Index';
+        }
+
+        // Función para actualizar precios
+        function updatePrices() {
+            if (confirm('¿Está seguro de que desea recalcular todos los precios con el IVA actual?')) {
+                alert('Precios actualizados exitosamente');
+                location.reload();
+            }
+        }
+
+        // Función para exportar planes
+        function exportPlans() {
+            alert('Exportando planes a CSV...');
+            // Aquí implementarías la lógica de exportación
+        }
+
+        // Event listeners
+        document.getElementById('planPrice').addEventListener('input', calculateTaxes);
+
+        // Animaciones y efectos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación de entrada para las tarjetas
+            const cards = document.querySelectorAll('.plan-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+
+            // Efecto de hover para las estadísticas
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05) translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
