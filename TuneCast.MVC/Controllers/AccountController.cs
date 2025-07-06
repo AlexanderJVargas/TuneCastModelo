@@ -54,8 +54,16 @@ namespace TuneCast.MVC.Controllers
                     {
                         return Redirect(returnUrl);
                     }
-                    return RedirectToAction("Index", "Home");
-                }
+                    // Redirige según el rol del usuario
+                    if (usuario.Rol == "Administrador")
+                    {
+                        return RedirectToAction("Dashboard", "Planes");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+            }
 
                 ViewData["ErrorMessage"] = "Email o contraseña incorrectos.";
                 return View();
@@ -109,6 +117,11 @@ namespace TuneCast.MVC.Controllers
                 ViewData["ErrorMessage"] = $"Error al registrar: {ex.Message}";
                 return View();
             }
+        }
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
 
         [HttpPost]

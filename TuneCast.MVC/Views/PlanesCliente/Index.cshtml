@@ -1,0 +1,561 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuneCast - Gestión de Planes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --hover-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            padding: 2rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: none;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+            .plan-card:hover {
+                transform: translateY(-10px);
+                box-shadow: var(--hover-shadow);
+            }
+
+        .plan-header {
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .plan-header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                opacity: 0.1;
+                z-index: 0;
+            }
+
+        .plan-personal .plan-header::before {
+            background: var(--primary-gradient);
+        }
+
+        .plan-familiar .plan-header::before {
+            background: var(--secondary-gradient);
+        }
+
+        .plan-premium .plan-header::before {
+            background: var(--success-gradient);
+        }
+
+        .plan-header > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-period {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .plan-features {
+            padding: 1.5rem 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--success-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .plan-actions {
+            padding: 1.5rem 2rem;
+            background: rgba(0,0,0,0.02);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-plan::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .btn-plan:hover::before {
+                left: 100%;
+            }
+
+        .btn-subscribe {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-current {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-upgrade {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .current-plan-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--success-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--warning-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .discount-banner {
+            background: var(--warning-gradient);
+            color: white;
+            padding: 1rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-music"></i> TuneCast
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Juan Pérez</div>
+                        <small class="text-muted">Cliente</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <!-- Stats Dashboard -->
+        <div class="dashboard-card">
+            <h2 class="mb-4">
+                <i class="fas fa-crown"></i> Mi Suscripción
+            </h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--primary-gradient);">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Planes Disponibles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--success-gradient);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-number">$39.50</div>
+                    <div class="stat-label">Precio Actual</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--secondary-gradient);">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-number">50</div>
+                    <div class="stat-label">Días Restantes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--warning-gradient);">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Satisfacción</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discount Banner -->
+        <div class="discount-banner">
+            <i class="fas fa-fire"></i> ¡Oferta Especial! Obtén un 15% de descuento en tu próxima renovación
+        </div>
+
+        <!-- Plans Section -->
+        <div class="dashboard-card">
+            <h2 class="mb-4">
+                <i class="fas fa-star"></i> Gestión de Planes
+            </h2>
+
+            <div class="row g-4">
+                <!-- Plan Personal -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="plan-card plan-personal">
+                        <div class="current-plan-badge">
+                            <i class="fas fa-check"></i> Plan Actual
+                        </div>
+                        <div class="plan-header">
+                            <div class="plan-name">Personal</div>
+                            <div class="plan-price">$1.15</div>
+                            <div class="plan-period">por mes</div>
+                        </div>
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Acceso básico a la plataforma</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Streaming de música ilimitado</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Calidad estándar</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Soporte por email</span>
+                            </div>
+                        </div>
+                        <div class="plan-actions">
+                            <button class="btn btn-plan btn-current" disabled>
+                                <i class="fas fa-crown"></i> Plan Actual
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan Familiar -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="plan-card plan-familiar">
+                        <div class="popular-badge">
+                            <i class="fas fa-star"></i> Popular
+                        </div>
+                        <div class="plan-header">
+                            <div class="plan-name">Familiar</div>
+                            <div class="plan-price">$4.03</div>
+                            <div class="plan-period">por mes</div>
+                        </div>
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Todas las funciones del Personal</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Hasta 6 cuentas familiares</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Streaming Premium</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Descarga offline</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Soporte prioritario</span>
+                            </div>
+                        </div>
+                        <div class="plan-actions">
+                            <button class="btn btn-plan btn-upgrade" onclick="upgradePlan(2)">
+                                <i class="fas fa-arrow-up"></i> Actualizar Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan Premium -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="plan-card plan-premium">
+                        <div class="plan-header">
+                            <div class="plan-name">Premium</div>
+                            <div class="plan-price">$7.99</div>
+                            <div class="plan-period">por mes</div>
+                        </div>
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Todas las funciones del Familiar</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Calidad Hi-Fi</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Contenido exclusivo</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Acceso anticipado</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span>Soporte 24/7</span>
+                            </div>
+                        </div>
+                        <div class="plan-actions">
+                            <button class="btn btn-plan btn-upgrade" onclick="upgradePlan(3)">
+                                <i class="fas fa-rocket"></i> Actualizar Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="dashboard-card">
+            <h2 class="mb-4">
+                <i class="fas fa-history"></i> Historial de Pagos
+            </h2>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Plan</th>
+                            <th>Monto</th>
+                            <th>Método</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-06-15</td>
+                            <td>Personal</td>
+                            <td>$1.15</td>
+                            <td>Tarjeta de Crédito</td>
+                            <td><span class="badge bg-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>2024-05-15</td>
+                            <td>Personal</td>
+                            <td>$1.15</td>
+                            <td>Tarjeta de Crédito</td>
+                            <td><span class="badge bg-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>2024-04-15</td>
+                            <td>Personal</td>
+                            <td>$1.15</td>
+                            <td>PayPal</td>
+                            <td><span class="badge bg-success">Completado</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

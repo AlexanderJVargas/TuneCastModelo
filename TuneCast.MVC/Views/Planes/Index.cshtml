@@ -561,133 +561,16 @@
                         <i class="fas fa-save me-2"></i>Guardar Plan
                     </button>
                 </div>
+
             </div>
+
         </div>
+
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Variables globales
-        let editingPlanId = null;
-        const TAX_RATE = 0.15; // 15% IVA
-
-        // Función para mostrar el formulario de creación
-        function showCreateForm() {
-            editingPlanId = null;
-            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus me-2"></i>Crear Nuevo Plan';
-            document.getElementById('planForm').reset();
-            document.getElementById('priceWithTax').value = '';
-            document.getElementById('taxAmount').value = '';
-            new bootstrap.Modal(document.getElementById('planModal')).show();
-        }
-
-        // Función para editar un plan
-        function editPlan(planId, planName) {
-            editingPlanId = planId;
-            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Plan: ' + planName;
-
-            // Datos de ejemplo (en una aplicación real estos vendrían de tu API)
-            const planData = {
-                1: { name: 'Personal', price: 1.00, description: 'Acceso básico para un usuario' },
-                2: { name: 'Familiar', price: 3.50, description: 'Acceso completo para hasta 4 usuarios' },
-                3: { name: 'Empresarial', price: 35.00, description: 'Solución empresarial para hasta 50 usuarios' }
-            };
-
-            const plan = planData[planId];
-            if (plan) {
-                document.getElementById('planName').value = plan.name;
-                document.getElementById('planPrice').value = plan.price;
-                document.getElementById('planDescription').value = plan.description;
-                calculateTaxes();
-            }
-
-            new bootstrap.Modal(document.getElementById('planModal')).show();
-        }
-
-        // Función para calcular impuestos
-        function calculateTaxes() {
-            const basePrice = parseFloat(document.getElementById('planPrice').value) || 0;
-            const taxAmount = basePrice * TAX_RATE;
-            const priceWithTax = basePrice + taxAmount;
-
-            document.getElementById('taxAmount').value = '$' + taxAmount.toFixed(2);
-            document.getElementById('priceWithTax').value = '$' + priceWithTax.toFixed(2);
-        }
-
-        // Función para guardar el plan
-        function savePlan() {
-            const formData = {
-                name: document.getElementById('planName').value,
-                price: parseFloat(document.getElementById('planPrice').value),
-                description: document.getElementById('planDescription').value
-            };
-
-            if (!formData.name || !formData.price || !formData.description) {
-                alert('Por favor complete todos los campos');
-                return;
-            }
-
-            // Aquí harías la llamada a tu API
-            console.log('Guardando plan:', formData);
-            console.log('Plan ID:', editingPlanId);
-
-            // Simular éxito
-            alert(editingPlanId ? 'Plan actualizado exitosamente' : 'Plan creado exitosamente');
-            bootstrap.Modal.getInstance(document.getElementById('planModal')).hide();
-
-            // Recargar la página o actualizar la vista
-            location.reload();
-        }
-
-        // Función para mostrar todos los planes
-        function showAllPlans() {
-            alert('Redirigiendo a la vista de todos los planes...');
-            // Aquí podrías redirigir a /Planes/Index
-            window.location.href = '/Planes/Index';
-        }
-
-        // Función para actualizar precios
-        function updatePrices() {
-            if (confirm('¿Está seguro de que desea recalcular todos los precios con el IVA actual?')) {
-                alert('Precios actualizados exitosamente');
-                location.reload();
-            }
-        }
-
-        // Función para exportar planes
-        function exportPlans() {
-            alert('Exportando planes a CSV...');
-            // Aquí implementarías la lógica de exportación
-        }
-
-        // Event listeners
-        document.getElementById('planPrice').addEventListener('input', calculateTaxes);
-
-        // Animaciones y efectos
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animación de entrada para las tarjetas
-            const cards = document.querySelectorAll('.plan-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(50px)';
-                setTimeout(() => {
-                    card.style.transition = 'all 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 200);
-            });
-
-            // Efecto de hover para las estadísticas
-            const statCards = document.querySelectorAll('.stat-card');
-            statCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.05) translateY(-5px)';
-                });
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1) translateY(0)';
-                });
-            });
-        });
-    </script>
 </body>
 </html>
+
+
+
+
