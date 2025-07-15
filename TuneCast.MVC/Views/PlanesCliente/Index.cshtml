@@ -1,561 +1,558 @@
-﻿<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TuneCast - Gestión de Planes</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --hover-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
+﻿@model IEnumerable<TuneCastModelo.Plan>
 
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-        }
+@{
+    ViewData["Title"] = "Mi Plan de Suscripción";
+    Layout = "_Layout";
+    var suscripcionActual = ViewBag.SuscripcionActual as TuneCastModelo.Suscripcion;
+    var planActual = ViewBag.PlanActual as TuneCastModelo.Plan;
+    var usuarioId = ViewBag.UsuarioId;
+}
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-        }
+<style>
+    :root {
+        --primary-purple: #7A00D4;
+        --light-purple: #B486F6;
+        --teal: #00C6C6;
+        --black: #000000;
+        --dark-purple: #3D0026;
+        --white: #FFFFFF;
+        --light-gray: #F8F9FA;
+        --border-gray: #E0E0E0;
+    }
 
-        .navbar-brand {
+    body {
+        background: linear-gradient(135deg, var(--light-purple) 0%, var(--teal) 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+        color: var(--white);
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 40px rgba(122, 0, 212, 0.3);
+    }
+
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
             font-weight: 700;
-            font-size: 1.5rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .main-container {
-            margin-top: 2rem;
-            padding: 2rem;
+        .page-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
         }
 
-        .dashboard-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            border: none;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
+    .current-plan-section {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 6px solid var(--teal);
+    }
+
+    .current-plan-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .current-plan-icon {
+        background: linear-gradient(135deg, var(--teal), var(--primary-purple));
+        color: var(--white);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        font-size: 1.5em;
+    }
+
+    .current-plan-info h2 {
+        color: var(--primary-purple);
+        margin: 0;
+        font-size: 1.8em;
+    }
+
+    .current-plan-info p {
+        color: #666;
+        margin: 5px 0 0 0;
+    }
+
+    .plan-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .plan-detail-card {
+        background: rgba(122, 0, 212, 0.05);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        border: 2px solid rgba(122, 0, 212, 0.1);
+    }
+
+        .plan-detail-card h4 {
+            color: var(--primary-purple);
+            margin-bottom: 10px;
+            font-size: 1.1em;
         }
 
-        .plan-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            border: none;
-            transition: all 0.3s ease;
-            overflow: hidden;
-            position: relative;
+    .plan-detail-value {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: var(--dark-purple);
+    }
+
+    .available-plans-section {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        color: var(--primary-purple);
+        font-size: 2em;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .plan-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 3px solid var(--border-gray);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .plan-card.current-plan {
+            border-color: var(--teal);
+            background: linear-gradient(135deg, rgba(0, 198, 198, 0.05), rgba(122, 0, 212, 0.05));
         }
 
-            .plan-card:hover {
-                transform: translateY(-10px);
-                box-shadow: var(--hover-shadow);
-            }
-
-        .plan-header {
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(122, 0, 212, 0.2);
+            border-color: var(--primary-purple);
         }
 
-            .plan-header::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                opacity: 0.1;
-                z-index: 0;
-            }
-
-        .plan-personal .plan-header::before {
-            background: var(--primary-gradient);
-        }
-
-        .plan-familiar .plan-header::before {
-            background: var(--secondary-gradient);
-        }
-
-        .plan-premium .plan-header::before {
-            background: var(--success-gradient);
-        }
-
-        .plan-header > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .plan-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .plan-price {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-        }
-
-        .plan-period {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .plan-features {
-            padding: 1.5rem 2rem;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
-
-        .feature-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--success-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            color: white;
-            font-size: 0.8rem;
-        }
-
-        .plan-actions {
-            padding: 1.5rem 2rem;
-            background: rgba(0,0,0,0.02);
-            border-top: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .btn-plan {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 15px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-            .btn-plan::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-                transition: left 0.5s ease;
-            }
-
-            .btn-plan:hover::before {
-                left: 100%;
-            }
-
-        .btn-subscribe {
-            background: var(--primary-gradient);
-            color: white;
-        }
-
-        .btn-current {
-            background: var(--success-gradient);
-            color: white;
-        }
-
-        .btn-upgrade {
-            background: var(--warning-gradient);
-            color: white;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.3s ease;
-        }
-
-            .stat-card:hover {
-                transform: translateY(-5px);
-            }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-        }
-
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #333;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .current-plan-badge {
+        .plan-card::before {
+            content: '';
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--success-gradient);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-purple), var(--teal));
         }
 
-        .popular-badge {
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            background: var(--warning-gradient);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+    .current-plan-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--teal);
+        color: var(--white);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 600;
+    }
 
-        .user-info {
+    .plan-name {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: var(--primary-purple);
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .plan-price {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .price-amount {
+        font-size: 3em;
+        font-weight: 800;
+        color: var(--dark-purple);
+        line-height: 1;
+    }
+
+    .price-currency {
+        font-size: 0.6em;
+        vertical-align: top;
+    }
+
+    .price-period {
+        color: #666;
+        font-size: 1.1em;
+        margin-top: 5px;
+    }
+
+    .plan-description {
+        color: #666;
+        text-align: center;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 30px;
+    }
+
+        .plan-features li {
+            padding: 10px 0;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            color: #555;
         }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
+            .plan-features li::before {
+                content: '✓';
+                background: var(--teal);
+                color: var(--white);
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 12px;
+                font-weight: bold;
+                font-size: 0.8em;
+            }
+
+    .plan-actions {
+        text-align: center;
+    }
+
+    .btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        font-size: 1em;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-purple), var(--dark-purple));
+        color: var(--white);
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(122, 0, 212, 0.3);
+            color: var(--white);
+            text-decoration: none;
         }
 
-        .discount-banner {
-            background: var(--warning-gradient);
-            color: white;
-            padding: 1rem;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 2rem;
-            font-weight: 600;
+    .btn-outline {
+        background: transparent;
+        border: 2px solid var(--teal);
+        color: var(--teal);
+    }
+
+        .btn-outline:hover {
+            background: var(--teal);
+            color: var(--white);
+            text-decoration: none;
         }
 
-        
+    .btn-disabled {
+        background: #ccc;
+        color: #666;
+        cursor: not-allowed;
+    }
+
+        .btn-disabled:hover {
+            transform: none;
+            box-shadow: none;
         }
-    </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-music"></i> TuneCast
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold">Juan Pérez</div>
-                        <small class="text-muted">Cliente</small>
+
+    .alert {
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: rgba(0, 198, 198, 0.1);
+        border: 2px solid var(--teal);
+        color: var(--dark-purple);
+    }
+
+    .alert-danger {
+        background: rgba(255, 71, 87, 0.1);
+        border: 2px solid #FF4757;
+        color: #FF4757;
+    }
+
+    .alert-warning {
+        background: rgba(255, 193, 7, 0.1);
+        border: 2px solid #FFC107;
+        color: #856404;
+    }
+
+    .no-plan-message {
+        background: linear-gradient(135deg, rgba(122, 0, 212, 0.1), rgba(0, 198, 198, 0.1));
+        border: 2px solid var(--light-purple);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .no-plan-message h3 {
+            color: var(--primary-purple);
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .no-plan-message p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+        }
+
+    .history-link {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        margin-top: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-crown"></i> Mi Plan de Suscripción</h1>
+        <p>Gestiona tu suscripción y explora otros planes disponibles</p>
+    </div>
+
+    <div class="actions-bar">
+        <div class="iva-notice">
+            <i class="fas fa-info-circle"></i>
+            <div class="iva-notice-text">
+                <h4>Información sobre IVA</h4>
+                <p>Todos los precios mostrados incluyen IVA del 15%. Los precios base se calculan automáticamente.</p>
+            </div>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Crear Nuevo Plan
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> @ViewBag.ErrorMessage
+        </div>
+    }
+
+    @if (planActual != null && suscripcionActual != null)
+    {
+        <div class="current-plan-section">
+            <div class="current-plan-header">
+                <div class="current-plan-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="current-plan-info">
+                    <h2>Plan Actual: @planActual.Nombre</h2>
+                    <p>Tu suscripción activa</p>
+                </div>
+            </div>
+
+            <div class="plan-details">
+                <div class="plan-detail-card">
+                    <h4>Precio Mensual</h4>
+                    <div class="plan-detail-value">$@planActual.Precio.ToString("F2")</div>
+                </div>
+                <div class="plan-detail-card">
+                    <h4>Fecha de Inicio</h4>
+                    <div class="plan-detail-value">@suscripcionActual.FechaInicio.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="plan-detail-card">
+                    <h4>Próxima Renovación</h4>
+                    <div class="plan-detail-value">@suscripcionActual.FechaFin.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="plan-detail-card">
+                    <h4>Estado</h4>
+                    <div class="plan-detail-value" style="color: var(--teal);">
+                        @(suscripcionActual.Activa ? "Activa" : "Inactiva")
                     </div>
                 </div>
             </div>
+
+            <p><strong>Descripción:</strong> @planActual.Descripcion</p>
         </div>
-    </nav>
+    }
+    else
+    {
+        <div class="no-plan-message">
+            <h3><i class="fas fa-info-circle"></i> Sin Plan Activo</h3>
+            <p>Actualmente no tienes un plan de suscripción activo. ¡Elige uno de los planes disponibles para comenzar a disfrutar de TuneCast!</p>
+        </div>
+    }
 
-    <div class="container main-container">
-        <!-- Stats Dashboard -->
-        <div class="dashboard-card">
-            <h2 class="mb-4">
-                <i class="fas fa-crown"></i> Mi Suscripción
-            </h2>
+    <div class="available-plans-section">
+        <h2 class="section-title">
+            <i class="fas fa-list"></i>
+            @(planActual != null ? "Cambiar Plan" : "Planes Disponibles")
+        </h2>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--primary-gradient);">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">Planes Disponibles</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--success-gradient);">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="stat-number">$39.50</div>
-                    <div class="stat-label">Precio Actual</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--secondary-gradient);">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div class="stat-number">50</div>
-                    <div class="stat-label">Días Restantes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--warning-gradient);">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Satisfacción</div>
-                </div>
+        @if (planActual != null)
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Nota:</strong> Al cambiar de plan, tu suscripción actual se cancelará inmediatamente y comenzará la nueva suscripción.
             </div>
-        </div>
+        }
 
-        <!-- Discount Banner -->
-        <div class="discount-banner">
-            <i class="fas fa-fire"></i> ¡Oferta Especial! Obtén un 15% de descuento en tu próxima renovación
-        </div>
-
-        <!-- Plans Section -->
-        <div class="dashboard-card">
-            <h2 class="mb-4">
-                <i class="fas fa-star"></i> Gestión de Planes
-            </h2>
-
-            <div class="row g-4">
-                <!-- Plan Personal -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="plan-card plan-personal">
+        <div class="plans-grid">
+            @foreach (var plan in Model)
+            {
+                <div class="plan-card @(planActual?.Id == plan.Id ? "current-plan" : "")">
+                    @if (planActual?.Id == plan.Id)
+                    {
                         <div class="current-plan-badge">
                             <i class="fas fa-check"></i> Plan Actual
                         </div>
-                        <div class="plan-header">
-                            <div class="plan-name">Personal</div>
-                            <div class="plan-price">$1.15</div>
-                            <div class="plan-period">por mes</div>
+                    }
+
+                    <div class="plan-name">@plan.Nombre</div>
+
+                    <div class="plan-price">
+                        <div class="price-amount">
+                            <span class="price-currency">$</span>@plan.Precio.ToString("F2")
                         </div>
-                        <div class="plan-features">
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Acceso básico a la plataforma</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Streaming de música ilimitado</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Calidad estándar</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Soporte por email</span>
-                            </div>
-                        </div>
-                        <div class="plan-actions">
-                            <button class="btn btn-plan btn-current" disabled>
-                                <i class="fas fa-crown"></i> Plan Actual
+                        <div class="price-period">por mes</div>
+                    </div>
+
+                    <div class="plan-description">
+                        @plan.Descripcion
+                    </div>
+
+                    <ul class="plan-features">
+                        @if (plan.Nombre.ToLower().Contains("personal"))
+                        {
+                            <li>Streaming de música básico</li>
+                            <li>Calidad estándar</li>
+                            <li>Anuncios limitados</li>
+                            <li>1 dispositivo simultáneo</li>
+                        }
+                        else if (plan.Nombre.ToLower().Contains("familiar"))
+                        {
+                            <li>Streaming sin anuncios</li>
+                            <li>Calidad alta</li>
+                            <li>Hasta 6 perfiles familiares</li>
+                            <li>Descarga offline</li>
+                            <li>6 dispositivos simultáneos</li>
+                        }
+                        else if (plan.Nombre.ToLower().Contains("empresarial"))
+                        {
+                            <li>Streaming premium sin anuncios</li>
+                            <li>Calidad lossless</li>
+                            <li>Gestión de usuarios</li>
+                            <li>Análisis de uso</li>
+                            <li>Dispositivos ilimitados</li>
+                            <li>Soporte prioritario</li>
+                        }
+                        else
+                        {
+                            <li>Todas las funciones incluidas</li>
+                            <li>Acceso completo a la biblioteca</li>
+                            <li>Soporte al cliente</li>
+                        }
+                    </ul>
+                    <div class="plan-actions">
+                        <a asp-action="Details" asp-route-id="@plan.Id" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@plan.Id" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@plan.Id" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    </div>
+
+                    <div class="plan-actions">
+                        @if (planActual?.Id == plan.Id)
+                        {
+                            <button class="btn btn-disabled" disabled>
+                                <i class="fas fa-check"></i> Plan Actual
                             </button>
-                        </div>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("ConfirmarCambio", new { planId = plan.Id })"
+                               class="btn btn-primary">
+                                <i class="fas fa-exchange-alt"></i>
+                                @(planActual != null ? "Cambiar a este Plan" : "Seleccionar Plan")
+                            </a>
+                        }
                     </div>
                 </div>
-
-                <!-- Plan Familiar -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="plan-card plan-familiar">
-                        <div class="popular-badge">
-                            <i class="fas fa-star"></i> Popular
-                        </div>
-                        <div class="plan-header">
-                            <div class="plan-name">Familiar</div>
-                            <div class="plan-price">$4.03</div>
-                            <div class="plan-period">por mes</div>
-                        </div>
-                        <div class="plan-features">
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Todas las funciones del Personal</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Hasta 6 cuentas familiares</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Streaming Premium</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Descarga offline</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Soporte prioritario</span>
-                            </div>
-                        </div>
-                        <div class="plan-actions">
-                            <button class="btn btn-plan btn-upgrade" onclick="upgradePlan(2)">
-                                <i class="fas fa-arrow-up"></i> Actualizar Plan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Plan Premium -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="plan-card plan-premium">
-                        <div class="plan-header">
-                            <div class="plan-name">Premium</div>
-                            <div class="plan-price">$7.99</div>
-                            <div class="plan-period">por mes</div>
-                        </div>
-                        <div class="plan-features">
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Todas las funciones del Familiar</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Calidad Hi-Fi</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Contenido exclusivo</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Acceso anticipado</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span>Soporte 24/7</span>
-                            </div>
-                        </div>
-                        <div class="plan-actions">
-                            <button class="btn btn-plan btn-upgrade" onclick="upgradePlan(3)">
-                                <i class="fas fa-rocket"></i> Actualizar Plan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Payment History -->
-        <div class="dashboard-card">
-            <h2 class="mb-4">
-                <i class="fas fa-history"></i> Historial de Pagos
-            </h2>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Plan</th>
-                            <th>Monto</th>
-                            <th>Método</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2024-06-15</td>
-                            <td>Personal</td>
-                            <td>$1.15</td>
-                            <td>Tarjeta de Crédito</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                        </tr>
-                        <tr>
-                            <td>2024-05-15</td>
-                            <td>Personal</td>
-                            <td>$1.15</td>
-                            <td>Tarjeta de Crédito</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                        </tr>
-                        <tr>
-                            <td>2024-04-15</td>
-                            <td>Personal</td>
-                            <td>$1.15</td>
-                            <td>PayPal</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            }
         </div>
     </div>
 
-</body>
-</html>
+    <div class="history-link">
+        <a href="@Url.Action("Historial")" class="btn btn-outline">
+            <i class="fas fa-history"></i> Ver Historial de Suscripciones
+        </a>
+    </div>
+</div>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
