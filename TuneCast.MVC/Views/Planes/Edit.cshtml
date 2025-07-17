@@ -1,5 +1,4 @@
 ﻿@model TuneCastModelo.Plan
-
 @{
     ViewData["Title"] = "Editar Plan";
     Layout = "_Layout";
@@ -11,390 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-purple: #7A00D4;
-            --light-purple: #B486F6;
-            --teal: #00C6C6;
-            --black: #000000;
-            --dark-purple: #3D0026;
-            --white: #FFFFFF;
-            --light-gray: #F8F9FA;
-            --border-gray: #E0E0E0;
-            --success-green: #28A745;
-            --warning-orange: #FFC107;
-            --danger-red: #DC3545;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--light-purple) 0%, var(--teal) 100%);
-            min-height: 100vh;
-            padding: 20px 0;
-        }
-
-        .container-custom {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .page-header {
-            background: linear-gradient(135deg, var(--warning-orange) 0%, #e67e22 100%);
-            color: var(--white);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 15px 35px rgba(255, 193, 7, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-            .page-header::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-                opacity: 0.3;
-            }
-
-            .page-header > * {
-                position: relative;
-                z-index: 1;
-            }
-
-            .page-header h1 {
-                font-size: 2.5em;
-                margin-bottom: 10px;
-                font-weight: 700;
-            }
-
-            .page-header p {
-                font-size: 1.2em;
-                opacity: 0.9;
-            }
-
-        .form-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .form-section {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-
-        .preview-section {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
-        .section-title {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: var(--primary-purple);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .current-plan-info {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(230, 126, 34, 0.1));
-            border: 2px solid var(--warning-orange);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-            .current-plan-info h4 {
-                color: var(--warning-orange);
-                margin-bottom: 10px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-        .current-info-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .current-info-item {
-            text-align: center;
-        }
-
-        .current-info-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .current-info-value {
-            font-weight: 700;
-            color: var(--dark-purple);
-            font-size: 1.1em;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            color: var(--dark-purple);
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid var(--border-gray);
-            border-radius: 12px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            background: var(--white);
-        }
-
-            .form-control:focus {
-                outline: none;
-                border-color: var(--warning-orange);
-                box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
-                transform: translateY(-2px);
-            }
-
-            .form-control.is-invalid {
-                border-color: var(--danger-red);
-            }
-
-        .text-danger {
-            color: var(--danger-red);
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            font-size: 1.1em;
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning-orange), #e67e22);
-            color: var(--white);
-        }
-
-            .btn-warning:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 25px rgba(255, 193, 7, 0.4);
-                color: var(--white);
-                text-decoration: none;
-            }
-
-        .btn-secondary {
-            background: var(--border-gray);
-            color: var(--dark-purple);
-        }
-
-            .btn-secondary:hover {
-                background: #ccc;
-                color: var(--dark-purple);
-                text-decoration: none;
-            }
-
-        .btn-danger {
-            background: var(--danger-red);
-            color: var(--white);
-        }
-
-            .btn-danger:hover {
-                background: #c82333;
-                color: var(--white);
-                text-decoration: none;
-            }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .iva-warning {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(255, 193, 7, 0.1));
-            border: 2px solid var(--warning-orange);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-            .iva-warning i {
-                font-size: 1.5em;
-                color: var(--warning-orange);
-            }
-
-        .iva-warning-text h4 {
-            color: var(--warning-orange);
-            margin-bottom: 5px;
-        }
-
-        .iva-warning-text p {
-            color: #666;
-            margin: 0;
-        }
-
-        .plan-preview {
-            border: 2px solid var(--warning-orange);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-            .plan-preview:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 30px rgba(255, 193, 7, 0.2);
-            }
-
-            .plan-preview::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 5px;
-                background: linear-gradient(90deg, var(--warning-orange), var(--teal));
-            }
-
-        .plan-preview-header {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), rgba(0, 198, 198, 0.05));
-            padding: 25px;
-            text-align: center;
-            position: relative;
-        }
-
-        .edit-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--warning-orange);
-            color: var(--white);
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
-
-        .preview-name {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: var(--primary-purple);
-            margin-bottom: 15px;
-        }
-
-        .preview-price-base {
-            font-size: 1em;
-            color: #666;
-            text-decoration: line-through;
-            margin-bottom: 5px;
-        }
-
-        .preview-price-final {
-            font-size: 2em;
-            font-weight: 800;
-            color: var(--dark-purple);
-            margin-bottom: 10px;
-        }
-
-            .preview-price-final .currency {
-                font-size: 0.6em;
-                vertical-align: top;
-            }
-
-        .iva-badge {
-            display: inline-block;
-            background: var(--teal);
-            color: var(--white);
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
-
-        .plan-preview-body {
-            padding: 25px;
-        }
-
-        .preview-description {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.6;
-            font-style: italic;
-        }
-
-        .changes-indicator {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(40, 167, 69, 0.1));
-            border: 2px solid var(--success-green);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-            .changes-indicator.has-changes {
-                border-color: var(--warning-orange);
-                background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(230, 126, 34, 0.1));
-            }
-
-            .changes-indicator i {
-                font-size: 1.2em;
-                margin-bottom: 5px;
-            }
-
-            .changes-indicator.has-changes i {
-                color: var(--warning-orange);
-            }
-
-            .changes-indicator:not(.has-changes) i {
-                color: var(--success-green);
-            }
-
-      
-    </style>
+    <link rel="stylesheet" href="~/css/editar-plan.css">
 </head>
 <body>
     <div class="container-custom">
@@ -439,7 +55,6 @@
             <input type="hidden" asp-for="Id" />
 
             <div class="form-container">
-                
                 <div class="form-section">
                     <div class="section-title">
                         <i class="fas fa-edit"></i>
@@ -452,8 +67,7 @@
                         <label asp-for="Nombre" class="form-label">
                             <i class="fas fa-tag"></i> Nombre del Plan
                         </label>
-                        <input asp-for="Nombre" class="form-control"
-                               oninput="updatePreview(); checkChanges()" required />
+                        <input asp-for="Nombre" class="form-control" required />
                         <span asp-validation-for="Nombre" class="text-danger"></span>
                     </div>
 
@@ -462,8 +76,7 @@
                             <i class="fas fa-dollar-sign"></i> Precio Base (sin IVA)
                         </label>
                         <input asp-for="Precio" class="form-control" type="number" step="0.01"
-                               value="@(Math.Round(Model.Precio / 1.15, 2))"
-                               oninput="updatePreview(); checkChanges()" required />
+                               value="@(Math.Round(Model.Precio / 1.15, 2))" required />
                         <span asp-validation-for="Precio" class="text-danger"></span>
                         <small class="text-muted">Precio actual base: $@(Math.Round(Model.Precio / 1.15, 2))</small>
                     </div>
@@ -472,8 +85,7 @@
                         <label asp-for="Descripcion" class="form-label">
                             <i class="fas fa-align-left"></i> Descripción
                         </label>
-                        <textarea asp-for="Descripcion" class="form-control" rows="4"
-                                  oninput="updatePreview(); checkChanges()" required></textarea>
+                        <textarea asp-for="Descripcion" class="form-control" rows="4" required></textarea>
                         <span asp-validation-for="Descripcion" class="text-danger"></span>
                     </div>
 
@@ -496,25 +108,21 @@
                         Vista Previa Actualizada
                     </div>
 
-                    <div class="plan-preview" id="planPreview">
+                    <div class="plan-preview">
                         <div class="edit-badge">
                             <i class="fas fa-edit"></i> Editando
                         </div>
                         <div class="plan-preview-header">
-                            <div class="preview-name" id="previewName">@Model.Nombre</div>
-                            <div class="preview-price-base" id="previewPriceBase">Base: $@(Math.Round(Model.Precio / 1.15, 2))</div>
-                            <div class="preview-price-final" id="previewPriceFinal">
-                                <span class="currency">$</span><span id="finalPrice">@Model.Precio</span>
+                            <div class="preview-name">@Model.Nombre</div>
+                            <div class="preview-price-base">Base: $@(Math.Round(Model.Precio / 1.15, 2))</div>
+                            <div class="preview-price-final">
+                                <span class="currency">$</span><span>@Model.Precio</span>
                             </div>
                             <div class="iva-badge">IVA 15% incluido</div>
                         </div>
                         <div class="plan-preview-body">
-                            <div class="preview-description" id="previewDescription">
+                            <div class="preview-description">
                                 @Model.Descripcion
-                            </div>
-                            <div class="changes-indicator" id="changesIndicator">
-                                <i class="fas fa-check-circle"></i>
-                                <p style="margin: 0; font-size: 0.9em;">Sin cambios</p>
                             </div>
                         </div>
                     </div>
@@ -522,86 +130,5 @@
             </div>
         </form>
     </div>
-
-    <script>
-        
-        const originalValues = {
-            nombre: '@Model.Nombre',
-            precio: @(Math.Round(Model.Precio / 1.15, 2)),
-            descripcion: '@Html.Raw(Model.Descripcion.Replace("'", "\\'"))'
-        };
-
-        function updatePreview() {
-            const nombre = document.getElementById('Nombre').value || originalValues.nombre;
-            const precio = parseFloat(document.getElementById('Precio').value) || originalValues.precio;
-            const descripcion = document.getElementById('Descripcion').value || originalValues.descripcion;
-
-            // Redondear correctamente para evitar decimales excesivos
-            const precioConIva = Math.round((precio * 1.15) * 100) / 100;
-
-            document.getElementById('previewName').textContent = nombre;
-            document.getElementById('previewPriceBase').textContent = `Base: ${precio.toFixed(2)}`;
-            document.getElementById('finalPrice').textContent = precioConIva.toFixed(2);
-            document.getElementById('previewDescription').textContent = descripcion;
-        }
-
-        function checkChanges() {
-            const currentNombre = document.getElementById('Nombre').value;
-            const currentPrecio = parseFloat(document.getElementById('Precio').value) || 0;
-            const currentDescripcion = document.getElementById('Descripcion').value;
-
-            // Usar el mismo redondeo para comparación
-            const roundedCurrentPrecio = Math.round(currentPrecio * 100) / 100;
-            const roundedOriginalPrecio = Math.round(originalValues.precio * 100) / 100;
-
-            const hasChanges = currentNombre !== originalValues.nombre ||
-                              Math.abs(roundedCurrentPrecio - roundedOriginalPrecio) > 0.01 ||
-                              currentDescripcion !== originalValues.descripcion;
-
-            const indicator = document.getElementById('changesIndicator');
-            const icon = indicator.querySelector('i');
-            const text = indicator.querySelector('p');
-
-            if (hasChanges) {
-                indicator.classList.add('has-changes');
-                icon.className = 'fas fa-exclamation-triangle';
-                text.textContent = 'Hay cambios pendientes de guardar';
-            } else {
-                indicator.classList.remove('has-changes');
-                icon.className = 'fas fa-check-circle';
-                text.textContent = 'Sin cambios';
-            }
-        }
-
-        // Form validacion
-        document.getElementById('editPlanForm').addEventListener('submit', function(e) {
-            const nombre = document.getElementById('Nombre').value.trim();
-            const precio = parseFloat(document.getElementById('Precio').value);
-            const descripcion = document.getElementById('Descripcion').value.trim();
-
-            if (!nombre || precio <= 0 || !descripcion) {
-                e.preventDefault();
-                alert('Por favor, complete todos los campos correctamente.');
-                return false;
-            }
-
-            if (precio > 1000) {
-                e.preventDefault();
-                alert('El precio no puede ser mayor a $1000.');
-                return false;
-            }
-
-            // Convertir de nuevo al precio final con IVA para su envío.
-            const precioConIva = Math.round((precio * 1.15) * 100) / 100;
-            document.getElementById('Precio').value = precioConIva.toFixed(2);
-
-            return true;
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            updatePreview();
-            checkChanges();
-        });
-    </script>
 </body>
 </html>

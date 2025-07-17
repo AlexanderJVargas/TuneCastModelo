@@ -1,0 +1,114 @@
+﻿@model TuneCastModelo.Plan
+
+@{
+    ViewData["Title"] = "Confirmar Cambio de Plan";
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="~/css/confirmacion-plan.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="confirmation-card">
+            <div class="confirmation-header">
+                <div class="confirmation-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h1>Confirmar Cambio de Plan</h1>
+                <p>Estás a punto de cambiar a un nuevo plan de suscripción</p>
+            </div>
+
+            <div class="plan-preview">
+                <div class="plan-name">@Model.Nombre</div>
+
+                <div class="plan-price">
+                    <div class="price-amount">
+                        <span class="price-currency">$</span>@Model.Precio.ToString("F2")
+                    </div>
+                    <div class="price-period">por mes</div>
+                </div>
+
+                <div class="plan-description">
+                    @Model.Descripcion
+                </div>
+
+                <ul class="plan-features">
+                    @if (Model.Nombre.ToLower().Contains("personal"))
+                    {
+                        <li>Streaming de música básico</li>
+                        <li>Calidad estándar</li>
+                        <li>Anuncios limitados</li>
+                        <li>1 dispositivo simultáneo</li>
+                        <li>Biblioteca musical completa</li>
+                    }
+                    else if (Model.Nombre.ToLower().Contains("familiar"))
+                    {
+                        <li>Streaming sin anuncios</li>
+                        <li>Calidad alta de audio</li>
+                        <li>Hasta 6 perfiles familiares</li>
+                        <li>Descarga offline ilimitada</li>
+                        <li>6 dispositivos simultáneos</li>
+                        <li>Playlist familiares compartidas</li>
+                    }
+                    else if (Model.Nombre.ToLower().Contains("empresarial"))
+                    {
+                        <li>Streaming premium sin anuncios</li>
+                        <li>Calidad lossless y Hi-Fi</li>
+                        <li>Gestión avanzada de usuarios</li>
+                        <li>Análisis y reportes de uso</li>
+                        <li>Dispositivos ilimitados</li>
+                        <li>Soporte prioritario 24/7</li>
+                        <li>API para integración empresarial</li>
+                    }
+                    else
+                    {
+                        <li>Todas las funciones incluidas</li>
+                        <li>Acceso completo a la biblioteca</li>
+                        <li>Soporte al cliente</li>
+                        <li>Streaming de alta calidad</li>
+                    }
+                </ul>
+            </div>
+
+            <div class="warning-section">
+                <h3><i class="fas fa-exclamation-triangle"></i> Información Importante</h3>
+                <p><strong>Al confirmar este cambio:</strong></p>
+                <p>• Tu plan actual será cancelado inmediatamente</p>
+                <p>• El nuevo plan comenzará de inmediato</p>
+                <p>• El próximo cobro será en 30 días por el monto del nuevo plan</p>
+                <p>• No se realizarán reembolsos proporcionales</p>
+            </div>
+
+            <div class="terms-section">
+                <h4><i class="fas fa-file-contract"></i> Términos del Cambio</h4>
+                <ul>
+                    <li>El cambio de plan es efectivo inmediatamente</li>
+                    <li>Las características del nuevo plan estarán disponibles al instante</li>
+                    <li>La facturación del nuevo plan comenzará en la próxima fecha de renovación</li>
+                    <li>Puedes cambiar de plan nuevamente cuando lo desees</li>
+                    <li>Se aplicarán los términos y condiciones del nuevo plan</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <form asp-action="CambiarPlan" method="post" style="display: inline;">
+                    <input type="hidden" name="planId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-confirm" onclick="return confirm('¿Estás seguro de que quieres cambiar a este plan?')">
+                        <i class="fas fa-check"></i> Confirmar Cambio
+                    </button>
+                </form>
+
+                <a href="@Url.Action("Index")" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
