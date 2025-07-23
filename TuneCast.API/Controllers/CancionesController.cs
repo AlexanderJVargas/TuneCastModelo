@@ -22,7 +22,7 @@ namespace TuneCast.API.Controllers
 
         // GET: api/Canciones
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cancion>>> GetCancion()
+        public async Task<ActionResult<IEnumerable<Cancion>>> GetCanciones()
         {
             return await _context.Canciones.ToListAsync();
         }

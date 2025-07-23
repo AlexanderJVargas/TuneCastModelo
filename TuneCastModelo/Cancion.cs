@@ -19,6 +19,7 @@ namespace TuneCastModelo
         public string DerechosAutor { get; set; }
         public int numeroReproducciones { get; set; }  // Número de reproducciones de la canción
         public string Licencia { get; set; }
+        public string RutaArchivo { get; set; }
 
         // Relaciones
         public int UsuarioId { get; set; }  // Foreign Key a Usuario

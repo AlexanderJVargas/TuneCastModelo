@@ -36,7 +36,8 @@ namespace TuneCast.API.Migrations
                     Nombre = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Contraseña = table.Column<string>(type: "text", nullable: false),
-                    Rol = table.Column<string>(type: "text", nullable: false)
+                    Rol = table.Column<string>(type: "text", nullable: false),
+                    PalabraClaveRecuperacion = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,6 +129,7 @@ namespace TuneCast.API.Migrations
                     DerechosAutor = table.Column<string>(type: "text", nullable: false),
                     numeroReproducciones = table.Column<int>(type: "integer", nullable: false),
                     Licencia = table.Column<string>(type: "text", nullable: false),
+                    RutaArchivo = table.Column<string>(type: "text", nullable: false),
                     UsuarioId = table.Column<int>(type: "integer", nullable: false),
                     PlaylistId = table.Column<int>(type: "integer", nullable: true)
                 },

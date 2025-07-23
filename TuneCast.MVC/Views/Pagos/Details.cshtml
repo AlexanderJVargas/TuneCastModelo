@@ -1,54 +1,167 @@
 ﻿@model TuneCastModelo.Pago
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Pago";
 }
 
-<h1>Details</h1>
+<div class="payment-container">
+    <!-- Header -->
+    <div class="payment-header">
+        <h1><i class="fas fa-receipt"></i> @ViewData["Title"]</h1>
+        <p>Información completa del pago #@Model.Id</p>
+    </div>
 
-<div>
-    <h4>Pago</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaPago)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaPago)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Monto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Monto)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MetodoPago)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MetodoPago)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UsuarioId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UsuarioId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SuscripcionId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SuscripcionId)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    <a asp-action="Index">Back to List</a>
+    <!-- Estado del pago -->
+    <div class="payment-alert payment-alert-success">
+        <div class="payment-alert-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="payment-alert-content">
+            <h4>Pago Confirmado</h4>
+            <p>Este pago ha sido procesado exitosamente y se encuentra registrado en el sistema.</p>
+        </div>
+    </div>
+
+    <!-- Grid de detalles -->
+    <div class="details-grid">
+        <!-- Información principal del pago -->
+        <div class="payment-card">
+            <h3 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                Información del Pago
+            </h3>
+
+            <div class="payment-details-grid">
+                <div class="payment-details-row">
+                    <span class="payment-details-label">ID del Pago:</span>
+                    <span class="payment-details-value">
+                        <span class="user-count">#@Model.Id</span>
+                    </span>
+                </div>
+
+                <div class="payment-details-row">
+                    <span class="payment-details-label">Fecha de Pago:</span>
+                    <span class="payment-details-value">@Model.FechaPago.ToString("dddd, dd 'de' MMMM 'de' yyyy 'a las' HH:mm")</span>
+                </div>
+
+                <div class="payment-details-row">
+                    <span class="payment-details-label">Monto Pagado:</span>
+                    <span class="payment-details-value amount">@Model.Monto.ToString("C")</span>
+                </div>
+
+                <div class="payment-details-row">
+                    <span class="payment-details-label">Método de Pago:</span>
+                    <span class="payment-details-value">
+                        <div class="payment-method-display">
+                            @if (Model.MetodoPago.Contains("Tarjeta"))
+                            {
+                                <i class="fas fa-credit-card payment-method-icon-display"></i>
+                            }
+                            @Model.MetodoPago
+                        </div>
+                    </span>
+                </div>
+
+                <div class="payment-details-row">
+                    <span class="payment-details-label">Estado:</span>
+                    <span class="payment-details-value">
+                        <span class="payment-security-badge">
+                            <i class="fas fa-check"></i>
+                            Completado
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="payment-card">
+            <h3 class="section-title">
+                <i class="fas fa-link"></i>
+                Información Relacionada
+            </h3>
+
+            <div class="payment-details-grid">
+                <div class="payment-details-row">
+                    <span class="payment-details-label">Usuario ID:</span>
+                    <span class="payment-details-value">
+                        <span class="iva-badge">@Model.UsuarioId</span>
+                    </span>
+                </div>
+
+                <div class="payment-details-row">
+                    <span class="payment-details-label">Suscripción ID:</span>
+                    <span class="payment-details-value">
+                        <span class="iva-badge">@Model.SuscripcionId</span>
+                    </span>
+                </div>
+
+                <div class="payment-details-row">
+                    <span class="payment-details-label">Tiempo transcurrido:</span>
+                    <span class="payment-details-value">
+                        @{
+                            var diferencia = DateTime.Now - Model.FechaPago;
+                            string tiempoTranscurrido = "";
+
+                            if (diferencia.Days > 0)
+                                tiempoTranscurrido = $"{diferencia.Days} día(s)";
+                            else if (diferencia.Hours > 0)
+                                tiempoTranscurrido = $"{diferencia.Hours} hora(s)";
+                            else if (diferencia.Minutes > 0)
+                                tiempoTranscurrido = $"{diferencia.Minutes} minuto(s)";
+                            else
+                                tiempoTranscurrido = "Hace unos segundos";
+                        }
+                        @tiempoTranscurrido
+                    </span>
+                </div>
+            </div>
+
+            <!-- Información de seguridad -->
+            <div class="payment-security-info">
+                <div class="payment-security-icons">
+                    <div class="payment-security-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="payment-security-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+                <div class="payment-security-text">
+                    <strong>Transacción Segura</strong><br>
+                    Este pago fue procesado de manera segura y toda la información está protegida según nuestros estándares de seguridad.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen visual -->
+    <div class="payment-summary">
+        <h3><i class="fas fa-chart-line"></i> Resumen de la Transacción</h3>
+        <div class="payment-amount">
+            <span class="currency">$</span>@Model.Monto.ToString("F2")
+        </div>
+        <div class="payment-plan-info">
+            Procesado el @Model.FechaPago.ToString("dd/MM/yyyy") via @Model.MetodoPago
+        </div>
+        <div class="payment-security-badge">
+            <i class="fas fa-certificate"></i>
+            Transacción Verificada
+        </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="payment-actions">
+        <a asp-action="Index" class="btn-payment-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Volver a la Lista
+        </a>
+        <a asp-action="Editar" asp-route-id="@Model.Id" class="btn-secondary">
+            <i class="fas fa-edit"></i>
+            Editar Pago
+        </a>
+        <button onclick="window.print()" class="btn-info">
+            <i class="fas fa-print"></i>
+            Imprimir Recibo
+        </button>
+    </div>
 </div>

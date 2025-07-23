@@ -3,45 +3,116 @@
     Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3><i class="fas fa-user-plus"></i> Registrar Usuario</h3>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="fas fa-user-plus"></i>
+            <h3>Crear Cuenta</h3>
+        </div>
+        <div class="auth-body">
+            <form asp-action="Register" method="post" novalidate>
+                <div class="form-group">
+                    <label class="form-label" for="nombre">
+                        <i class="fas fa-user"></i> Nombre de Usuario
+                    </label>
+                    <input id="nombre"
+                           name="nombre"
+                           type="text"
+                           class="form-control"
+                           required
+                           placeholder="Ingrese su nombre"
+                           autocomplete="username"
+                           value="@(ViewData["Nombre"] ?? "")"
+                           aria-describedby="nombre-help" />
+                    <small id="nombre-help" class="sr-only">Ingrese su nombre de usuario</small>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Register" method="post">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Nombre de Usuario</label>
-                            <input name="nombre" type="text" class="form-control" required placeholder="Ingrese su nombre" />
-                        </div>
 
-                        <div class="form-group mb-3">
-                            <label class="form-label">Correo Electrónico</label>
-                            <input name="email" type="email" class="form-control" required placeholder="Ingrese su correo" />
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input name="contraseña" type="password" class="form-control" required placeholder="Ingrese su contraseña" />
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-user-plus"></i> Registrar
-                            </button>
-                        </div>
-                    </form>
-
-                    @if (ViewData["ErrorMessage"] != null)
-                    {
-                        <div class="alert alert-danger mt-3">
-                            @ViewData["ErrorMessage"]
-                        </div>
-                    }
+                <div class="form-group">
+                    <label class="form-label" for="email-reg">
+                        <i class="fas fa-envelope"></i> Correo Electrónico
+                    </label>
+                    <input id="email-reg"
+                           name="email"
+                           type="email"
+                           class="form-control"
+                           required
+                           placeholder="ejemplo@correo.com"
+                           autocomplete="email"
+                           value="@(ViewData["Email"] ?? "")"
+                           aria-describedby="email-reg-help" />
+                    <small id="email-reg-help" class="sr-only">Ingrese su dirección de correo electrónico</small>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password-reg">
+                        <i class="fas fa-lock"></i> Contraseña
+                    </label>
+                    <input id="password-reg"
+                           name="contraseña"
+                           type="password"
+                           class="form-control"
+                           required
+                           placeholder="Cree una contraseña segura"
+                           pattern="^(?=.[A-Z])(?=.[\W]).{8,}$"
+                           autocomplete="new-password"
+                           aria-describedby="password-reg-help" />
+                    <small id="password-reg-help" class="form-text">
+                        La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirm-password">
+                        <i class="fas fa-lock"></i> Confirmar Contraseña
+                    </label>
+                    <input id="confirm-password"
+                           name="confirmPassword"
+                           type="password"
+                           class="form-control"
+                           required
+                           placeholder="Repita su contraseña"
+                           autocomplete="new-password"
+                           aria-describedby="confirm-password-help" />
+                    <small id="confirm-password-help" class="sr-only">Repita la contraseña para confirmar</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="recovery-key">
+                        <i class="fas fa-key"></i> Palabra Clave de Recuperación
+                    </label>
+                    <input id="recovery-key"
+                           name="palabraClaveRecuperacion"
+                           type="text"
+                           class="form-control"
+                           required
+                           placeholder="Ejemplo: MiPalabraSecreta123"
+                           value="@(ViewData["PalabraClaveRecuperacion"] ?? "")"
+                           aria-describedby="recovery-key-help" />
+                    <small id="recovery-key-help" class="form-text">
+                        <i class="fas fa-shield-alt"></i> <strong>Importante:</strong> Guarde esta palabra clave en un lugar seguro. La necesitará para recuperar su cuenta.
+                    </small>
+                </div>
+
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-user-plus"></i> Crear Cuenta
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <p>
+                    ¿Ya tienes cuenta?
+                    <a href="@Url.Action("Login", "Account")" class="auth-link">
+                        Inicia sesión aquí
+                    </a>
+                </p>
             </div>
+
+            @if (ViewData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> @ViewData["ErrorMessage"]
+                </div>
+            }
         </div>
     </div>
 </div>

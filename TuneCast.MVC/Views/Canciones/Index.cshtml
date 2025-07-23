@@ -1,83 +1,73 @@
 ﻿@model IEnumerable<TuneCastModelo.Cancion>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Canciones";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Titulo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Artista)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Genero)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Aprobada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DerechosAutor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.numeroReproducciones)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Licencia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UsuarioId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Titulo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Artista)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Genero)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Aprobada)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DerechosAutor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.numeroReproducciones)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Licencia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UsuarioId)
-            </td>
-            <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="container mt-4">
+    <h2 class="mb-4"> Lista de Canciones</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3"> Crear Nueva Canción</a>
+
+    <table class="table table-hover table-borderless align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Portada</th>
+                <th>Título</th>
+                <th>Artista</th>
+                <th>Género</th>
+                <th>Aprobada</th>
+                <th>Derechos</th>
+                <th>Reproducciones</th>
+                <th>Licencia</th>
+                <th>Usuario ID</th>
+                <th>🎧</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Select((c, i) => new { Cancion = c, Index = i + 1 }))
+            {
+                <tr>
+                    <td>@item.Index</td>
+                    <td>
+                        <img src="@($"/portadas/portada_{item.Cancion.Id}.jpg")" class="rounded shadow-sm" style="width:60px;height:60px; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/60x60.png?text=♪';" />
+
+
+                    </td>
+                    <td>@item.Cancion.Titulo</td>
+                    <td>@item.Cancion.Artista</td>
+                    <td>@item.Cancion.Genero</td>
+                    <td>
+                        @if (item.Cancion.Aprobada)
+                        {
+                            <span class="badge bg-success">Sí</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">No</span>
+                        }
+                    </td>
+                    <td>@item.Cancion.DerechosAutor</td>
+                    <td>@item.Cancion.numeroReproducciones</td>
+                    <td>@item.Cancion.Licencia</td>
+                    <td>@item.Cancion.UsuarioId</td>
+                    <td>
+                        <a asp-action="Reproducir" asp-route-id="@item.Cancion.Id" class="btn btn-sm btn-outline-success">
+                            ▶ Escuchar
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Cancion.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="Details" asp-route-id="@item.Cancion.Id" class="btn btn-sm btn-info"> Detalles</a>
+                        <a asp-action="Delete" asp-route-id="@item.Cancion.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

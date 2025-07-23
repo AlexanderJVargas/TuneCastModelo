@@ -83,6 +83,10 @@ namespace TuneCast.API.Migrations
                     b.Property<int?>("PlaylistId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("RutaArchivo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("text");
@@ -231,6 +235,10 @@ namespace TuneCast.API.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PalabraClaveRecuperacion")
                         .IsRequired()
                         .HasColumnType("text");
 

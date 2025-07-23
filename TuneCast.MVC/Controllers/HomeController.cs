@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TuneCast.MVC.Models;
+using TuneCastAPIConsumer;
+using TuneCastModelo;
 
 namespace TuneCast.MVC.Controllers
 {
@@ -20,10 +22,22 @@ namespace TuneCast.MVC.Controllers
                 return RedirectToAction("Login", "Account");  // Redirige a la página de login
             }
 
-            return View();
-        
-        }
+            // Obtener canciones
+            var canciones = Crud<Cancion>.GetAll(); // Recuperar canciones de la API
+            return View(canciones);
 
+            // Obtén la lista de usuarios con el rol de "Artista"
+            var artistas = GetUsuariosRol("Artista");
+            return View(artistas);
+
+        }
+        private List<Usuario> GetUsuariosRol(string rol)
+        {
+            var data = Crud<Usuario>.GetAll();
+            var artistas = data.Where(u => u.Rol == rol).ToList();
+
+            return artistas;
+        }
         public IActionResult Privacy()
         {
             return View();
@@ -34,5 +48,6 @@ namespace TuneCast.MVC.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

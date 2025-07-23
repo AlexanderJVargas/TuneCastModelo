@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "¡Pago Exitoso!";
+}
+
+<div class="payment-container">
+    <div class="payment-success-container">
+
+        <div class="payment-success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <h1 class="payment-success-title">¡Pago Realizado con Éxito!</h1>
+
+        <div class="payment-alert payment-alert-success">
+            <div class="payment-alert-icon">
+                <i class="fas fa-thumbs-up"></i>
+            </div>
+            <div class="payment-alert-content">
+                <h4>Tu suscripción está activa</h4>
+                <p>Hemos procesado tu pago correctamente y tu suscripción ya está disponible para usar.</p>
+            </div>
+        </div>
+
+        <div class="payment-card">
+            <div class="payment-success-details">
+                <h4><i class="fas fa-receipt"></i> Detalles de la Transacción</h4>
+
+                <div class="payment-success-info">
+                    <span class="payment-success-label">Monto Pagado:</span>
+                    <span class="payment-success-value">@ViewBag.Monto.ToString("C")</span>
+                </div>
+
+                <div class="payment-success-info">
+                    <span class="payment-success-label">Método de Pago:</span>
+                    <span class="payment-success-value">**** **** **** @ViewBag.UltimosDigitos</span>
+                </div>
+
+                <div class="payment-success-info">
+                    <span class="payment-success-label">Fecha de Transacción:</span>
+                    <span class="payment-success-value">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+
+                <div class="payment-success-info">
+                    <span class="payment-success-label">Estado:</span>
+                    <span class="payment-success-value">
+                        <span class="payment-security-badge">
+                            <i class="fas fa-check"></i>
+                            Completado
+                        </span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="payment-security-info">
+                <div class="payment-security-icons">
+                    <div class="payment-security-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="payment-security-icon">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-actions">
+                <a asp-action="Index" class="btn-payment-secondary">
+                    <i class="fas fa-list"></i>
+                    Ver Historial de Pagos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

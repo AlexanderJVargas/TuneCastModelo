@@ -1,65 +1,164 @@
 ﻿@model IEnumerable<TuneCastModelo.Pago>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Historial de Pagos";
 }
 
-<h1>Index</h1>
+<div class="container-custom">
+    <!-- Header -->
+    <div class="payment-header">
+        <h1><i class="fas fa-credit-card"></i> @ViewData["Title"]</h1>
+        <p>Administra y revisa todos tus pagos realizados</p>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaPago)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Monto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MetodoPago)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UsuarioId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SuscripcionId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaPago)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Monto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MetodoPago)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UsuarioId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SuscripcionId)
-            </td>
-            <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <!-- Estadísticas rápidas -->
+    <div class="stats-section">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <div class="stat-number">@Model.Count()</div>
+            <div class="stat-label">Total Pagos</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-number">@Model.Sum(p => p.Monto).ToString("C")</div>
+            <div class="stat-label">Monto Total</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="stat-number">@(Model.Any() ? Model.Max(p => p.FechaPago).ToString("MMM yyyy") : "N/A")</div>
+            <div class="stat-label">Último Pago</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-number">@Model.Count(p => p.MetodoPago.Contains("Tarjeta"))</div>
+            <div class="stat-label">Pagos con Tarjeta</div>
+        </div>
+    </div>
+
+    <!-- Barra de acciones -->
+    <div class="actions-bar">
+        <div class="iva-notice">
+            <i class="fas fa-info-circle"></i>
+            <div class="iva-notice-text">
+                <h4>Información</h4>
+                <p>Aquí puedes ver todo tu historial de pagos y realizar nuevos pagos para tus suscripciones.</p>
+            </div>
+        </div>
+
+        <a asp-action="Create" class="btn-primary">
+            <i class="fas fa-plus"></i>
+            Nuevo Pago
+        </a>
+    </div>
+
+    <!-- Tabla de pagos -->
+    @if (Model.Any())
+    {
+        <div class="payment-table-container">
+            <div class="payment-table-header">
+                <h3><i class="fas fa-table"></i> Lista de Pagos</h3>
+                <div>
+                    <span class="payment-security-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        @Model.Count() registros
+                    </span>
+                </div>
+            </div>
+
+            <div class="payment-table-responsive">
+                <table class="payment-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> ID</th>
+                            <th><i class="fas fa-calendar"></i> Fecha</th>
+                            <th><i class="fas fa-dollar-sign"></i> Monto</th>
+                            <th><i class="fas fa-credit-card"></i> Método</th>
+                            <th><i class="fas fa-user"></i> Usuario</th>
+                            <th><i class="fas fa-subscription"></i> Suscripción</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(p => p.FechaPago))
+                        {
+                            <tr>
+                                <td>
+                                    <span class="user-count">#@item.Id</span>
+                                </td>
+                                <td>@item.FechaPago.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="amount-cell">@item.Monto.ToString("C")</td>
+                                <td>
+                                    <div class="payment-method-display">
+                                        @if (item.MetodoPago.Contains("Tarjeta"))
+                                        {
+                                            <i class="fas fa-credit-card" style="color: var(--primary-purple);"></i>
+                                        }
+                                        else if (item.MetodoPago.Contains("PayPal"))
+                                        {
+                                            <i class="fab fa-paypal" style="color: var(--info-blue);"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-university" style="color: var(--success-green);"></i>
+                                        }
+                                        @item.MetodoPago
+                                    </div>
+                                </td>
+                                <td>@item.UsuarioId</td>
+                                <td>@item.SuscripcionId</td>
+                                <td>
+                                    <div class="payment-btn-group">
+                                        <a asp-action="Detalles" asp-route-id="@item.Id"
+                                           class="btn btn-info btn-sm"
+                                           title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Editar" asp-route-id="@item.Id"
+                                           class="btn btn-secondary btn-sm"
+                                           title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Eliminar" asp-route-id="@item.Id"
+                                           class="btn btn-danger btn-sm"
+                                           title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Estado vacío -->
+        <div class="payment-card" style="text-align: center;">
+            <div style="padding: 60px 40px;">
+                <div style="font-size: 4em; color: var(--border-gray); margin-bottom: 20px;">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <h3 style="color: var(--dark-purple); margin-bottom: 15px;">No hay pagos registrados</h3>
+                <p style="color: #666; margin-bottom: 30px; font-size: 1.1em;">
+                    Aún no has realizado ningún pago. Cuando realices tu primer pago, aparecerá aquí.
+                </p>
+                <a asp-action="Create" class="btn-payment-primary" style="width: auto;">
+                    <i class="fas fa-plus"></i>
+                    Realizar Primer Pago
+                </a>
+            </div>
+        </div>
+    }
+</div>

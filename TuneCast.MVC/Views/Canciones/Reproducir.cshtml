@@ -1,0 +1,91 @@
+﻿@model TuneCastModelo.Cancion
+
+@{
+    ViewData["Title"] = "Reproducir Canción";
+    Layout = null; // Opcional, si quieres que sea pantalla completa sin menú.
+}
+@{
+    var rutaPortada = $"/portadas/portada_{Model.Id}.jpg";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@Model.Titulo - Reproduciendo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e1e1e, #3a0ca3);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .player-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .cover {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .titulo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .artista {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .repro-count {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="@Url.Action("Index", "Canciones")" class="btn-back btn btn-outline-light btn-sm"> Volver</a>
+    <div class="player-container">
+        <img src="@rutaPortada" alt="Portada" class="img-fluid rounded mb-4" style="max-width: 300px;" />
+        <div class="titulo">@Model.Titulo</div>
+        <div class="artista">@Model.Artista</div>
+        <div class="repro-count">🔁 Reproducciones: @Model.numeroReproducciones</div>
+
+        <audio controls autoplay>
+            <source src="@Model.RutaArchivo" type="audio/mpeg" />
+            Tu navegador no soporta el reproductor de audio.
+        </audio>
+    </div>
+</body>
+</html>

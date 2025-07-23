@@ -1,8 +1,83 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<TuneCastModelo.Cancion>
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">TuneCast.MVC</div>
+
+        <nav class="nav-section">
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Buscar</a></li>
+                <li><a href="#">Tu biblioteca</a></li>
+            </ul>
+        </nav>
+
+        <nav class="nav-section">
+            <h3>Administración</h3>
+            <ul class="nav-links">
+                <li><a asp-controller="Anuncios" asp-action="Index">Anuncios</a></li>
+                <li><a asp-controller="Canciones" asp-action="Index">Canciones</a></li>
+                <li><a asp-controller="Pagos" asp-action="Index">Pagos</a></li>
+                <li><a asp-controller="Planes" asp-action="Index">Planes</a></li>
+                <li><a asp-controller="Playlists" asp-action="Index">Playlists</a></li>
+                <li><a asp-controller="Subscripciones" asp-action="Index">Subscripciones</a></li>
+                <li><a asp-controller="Usuarios" asp-action="Index">Usuarios</a></li>
+            </ul>
+        </nav>
+
+        <div class="library-section">
+            <h4>Crea tu primera lista</h4>
+            <p>Es muy fácil, y te echaremos una mano.</p>
+            <button class="btn-create">Crear lista</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Canciones en tendencia -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Canciones en tendencia</h2>
+                <a href="#" class="show-all">Mostrar todos</a>
+            </div>
+
+            <div class="cards-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="card">
+                        <a href="@Url.Action("Reproducir", "Canciones", new { id = item.Id })">
+                            <div class="card-image">
+                                <img src="@($"/portadas/portada_{item.Id}.jpg")" alt="Portada" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
+                            </div>
+                            <div class="card-title">@item.Titulo</div>
+                            <div class="card-subtitle">
+                                <span class="card-explicit">E</span>
+                                @item.Artista
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Artistas populares -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Artistas populares</h2>
+                <a href="#" class="show-all">Mostrar todos</a>
+            </div>
+            <div class="artists-grid">
+                <div class="artist-card">
+                    <div class="artist-image">default-avatar.jpg</div>
+                    <div class="artist-name">Artista</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>

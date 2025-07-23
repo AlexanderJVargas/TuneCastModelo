@@ -1,65 +1,98 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TuneCast.MVC</title>
+
+    <!-- Bootstrap y estilos -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ValidacionDatos.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Pagos.css" asp-append-version="true" />}
+
     <link rel="stylesheet" href="~/TuneCast.MVC.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TuneCast.MVC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+<body class="layout-body">
+
+    <div class="layout-container">
+
+        <!-- Barra de navegación fija -->
+        <header class="layout-header">
+            <nav class="navbar navbar-expand-sm navbar-light bg-dark-purple border-bottom box-shadow mb-3">
+                <div class="container-fluid">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        TuneCast.MVC
+                    </a>
+
+                    <input type="text" class="search-bar" placeholder="¿Qué quieres reproducir?">
+                    <div class="user-menu">
+                        <a href="#">Vuelvete Premium</a>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Account" asp-action="Perfil">Mi Perfil</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Anuncios" asp-action="Index">Anuncios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Canciones" asp-action="Index">Canciones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Pagos" asp-action="Index">Pagos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Planes" asp-action="Index">Planes</a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Playlists" asp-action="Index">Playlists</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Subscripciones" asp-action="Index">Subscripciones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
-                        </li>
-                    </ul>
+                        <span>|</span>
+
+                        <ul class="navbar-nav">
+                            <!-- Si el usuario  está autenticado, muestra el nombre y botón de cierre de sesión, si no muestra los botones de register y login -->
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+
+                                <!-- Enlace para "Registrarse" -->
+                                <a href="@Url.Action("Register", "Account")" class="btn btn-sm btn-outline-primary">
+                                    Registrarse
+                                </a>
+                                <!-- Enlace para "Iniciar sesión" -->
+                                <a href="@Url.Action("Login", "Account")" class="btn btn-sm btn-outline-success">
+                                    Iniciar sesión
+                                </a>
+                            }
+                            else
+                            {
+                                <li class="nav-item"><span class="nav-link">@User.Identity.Name</span> Bienvenido</li>
+                                <li class="nav-item">
+                                    <form asp-controller="Account" asp-action="Logout" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="nav-link btn btn-link">Cerrar sesión</button>
+                                    </form>
+                                </li>
+                                @*  <li class="nav-item"><span class="nav-link">@User.Identity.Name</span></li> *@
+                                @*  
+                                <a href="@Url.Action("Logout", "Account")" class="btn btn-sm btn-outline-primary"> Cerrar sesion</a>
+ *@
+
+
+
+                            }
+                        </ul>
+                    </div>
+
+
                 </div>
+
+
+
+            </nav>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="layout-main">
+            <div class="content-wrapper">
+                @RenderBody() <!-- Aquí se va a renderizar el contenido de cada vista -->
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
         </main>
+
+        <!-- Pie de página -->
+        <footer class="layout-footer">
+            <div class="footer-content">
+                <span>&copy; 2025 - TuneCast.MVC - Tu plataforma de música favorita</span>
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - TuneCast.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

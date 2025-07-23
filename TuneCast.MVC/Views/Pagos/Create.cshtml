@@ -1,58 +1,160 @@
 ﻿@model TuneCastModelo.Pago
-
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Procesar Método de Pago";
 }
 
-<h1>Create</h1>
+<div class="payment-container">
 
-<h4>Pago</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
+    <div class="payment-header">
+        <h1><i class="fas fa-credit-card"></i> @ViewData["Title"]</h1>
+        <p>Completa los datos para finalizar tu suscripción</p>
+    </div>
+
+    <div class="payment-summary">
+        <h3><i class="fas fa-receipt"></i> Resumen del Pago</h3>
+        <div class="payment-amount">
+            <span class="currency">$</span>@(ViewData["PlanPrecio"]?.ToString() ?? Model?.Monto.ToString("F2") ?? "0.00")
+        </div>
+        <div class="payment-plan-info">
+            Plan seleccionado: <strong>@(ViewData["PlanNombre"] ?? "Plan Básico")</strong>
+        </div>
+        <div class="payment-security-badge">
+            <i class="fas fa-shield-alt"></i>
+            Transacción 100% Segura
+        </div>
+    </div>
+
+
+    <div class="payment-card">
+        <form asp-action="Create" method="post" class="payment-form">
+            @Html.AntiForgeryToken()
+
+            <input asp-for="Monto" type="hidden" value="@(Model?.Monto ?? 0)" />
+
+            <div class="payment-form-section">
+                <h3 class="payment-form-title">
+                    <i class="fas fa-credit-card"></i>
+                    Método de Pago
+                </h3>
+
+                <div class="payment-methods">
+                    <div class="payment-method-option selected" data-method="credit-card">
+                        <div class="payment-method-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-method-info">
+                            <h4>Tarjeta de Crédito/Débito</h4>
+                            <p>Visa, Mastercard, American Express</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-form-group">
+                    <select name="MetodoPago" class="payment-form-control" required>
+                        <option value="">Seleccione un método</option>
+                        <option value="Tarjeta de Crédito" selected>Tarjeta de Crédito</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="FechaPago" class="control-label"></label>
-                <input asp-for="FechaPago" class="form-control" />
-                <span asp-validation-for="FechaPago" class="text-danger"></span>
+
+            <!-- Sección: Datos de la Tarjeta -->
+            <div class="payment-form-section" id="card-section">
+                <h3 class="payment-form-title">
+                    <i class="fas fa-lock"></i>
+                    Datos de la Tarjeta
+                </h3>
+
+                <div class="payment-form-group">
+                    <label class="payment-form-label">Número de Tarjeta</label>
+                    <input type="text"
+                           name="numeroTarjeta"
+                           class="payment-form-control card-number-input"
+                           value="@ViewData["NumeroTarjeta"]"
+                           placeholder="1234 5678 9012 3456"
+                           required
+                           pattern="[0-9]{16}"
+                           maxlength="19"
+                           title="16 dígitos sin espacios" />
+                </div>
+
+                <div class="card-grid">
+                    <div class="payment-form-group">
+                        <label class="payment-form-label">Fecha Expiración</label>
+                        <input type="text"
+                               name="fechaExpiracion"
+                               class="payment-form-control"
+                               value="@ViewData["FechaExpiracion"]"
+                               placeholder="MM/AA"
+                               required
+                               pattern="(0[1-9]|1[0-2])\/[0-9]{2}"
+                               maxlength="5"
+                               title="Formato MM/AA" />
+                    </div>
+
+                    <div class="payment-form-group">
+                        <label class="payment-form-label">CVV</label>
+                        <input type="text"
+                               name="cvv"
+                               class="payment-form-control"
+                               value="@ViewData["CVV"]"
+                               placeholder="123"
+                               required
+                               pattern="[0-9]{3,4}"
+                               maxlength="4"
+                               title="3-4 dígitos" />
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Monto" class="control-label"></label>
-                <input asp-for="Monto" class="form-control" />
-                <span asp-validation-for="Monto" class="text-danger"></span>
+
+            <!-- Información de seguridad -->
+            <div class="payment-security-info">
+                <div class="payment-security-icons">
+                    <div class="payment-security-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="payment-security-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="payment-security-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                </div>
+                <div class="payment-security-text">
+                    <strong>Tu información está protegida</strong><br>
+                    Usamos encriptación SSL de 256 bits y cumplimos con los estándares PCI DSS para proteger tus datos de pago.
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="MetodoPago" class="control-label"></label>
-                <input asp-for="MetodoPago" class="form-control" />
-                <span asp-validation-for="MetodoPago" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <input asp-for="UsuarioId" class="form-control" />
-                <span asp-validation-for="UsuarioId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SuscripcionId" class="control-label"></label>
-                <input asp-for="SuscripcionId" class="form-control" />
-                <span asp-validation-for="SuscripcionId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <!-- Errores de Validación -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="payment-alert payment-alert-danger">
+                    <div class="payment-alert-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="payment-alert-content">
+                        <h4>Error en el formulario</h4>
+                        <ul class="payment-error-list">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            <!-- Botones de acción -->
+            <div class="payment-actions">
+                <a href="javascript:history.back()" class="btn-payment-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver
+                </a>
+                <button type="submit" class="btn-payment-primary">
+                    <i class="fas fa-credit-card"></i>
+                    Procesar Pago
+                </button>
             </div>
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
