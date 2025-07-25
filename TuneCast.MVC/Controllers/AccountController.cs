@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TuneCastAPIConsumer;
 using TuneCastModelo;
+using System.Linq;
 
 namespace TuneCast.MVC.Controllers
 {
@@ -15,6 +16,10 @@ namespace TuneCast.MVC.Controllers
         {
             // Configura el endpoint de la API para usuarios
             Crud<Usuario>.EndPoint = "https://localhost:7194/api/Usuarios"; // Reemplaza con tu URL real
+            Crud<Cancion>.EndPoint = "https://localhost:7194/api/Canciones";
+            Crud<Suscripcion>.EndPoint = "https://localhost:7194/api/Suscripciones";
+            Crud<Plan>.EndPoint = "https://localhost:7194/api/Planes";
+        
         }
         [HttpGet]
         public IActionResult RecuperarPassword()
@@ -191,84 +196,145 @@ namespace TuneCast.MVC.Controllers
 
 
 
-        // Acción para mostrar el perfil del usuario
+        [HttpGet]
         public IActionResult Perfil()
         {
-            // Obtenemos el nombre del usuario que está autenticado
-            var userName = User.Identity.Name;
-
-            // Recuperamos el usuario por su nombre (simulando el proceso aquí)
-            var user = GetUserByName(userName);
-
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
+                // Verificar si el usuario está autenticado
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
 
-            // Asignamos la imagen de perfil y biografía al ViewBag
-            ViewBag.ProfileImage = "/images/default-avatar.jpg";  // Imagen por defecto
-            ViewBag.Biography = "Biografía del artista o cliente";  // Biografía por defecto
+                // Obtener el ID del usuario autenticado
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    TempData["ErrorMessage"] = "Error al obtener información del usuario";
+                    return RedirectToAction("Login", "Account");
+                }
 
-            // Determinamos el rol del usuario
-            if (user.Rol == "Artista")
-            {
-                // Si es un artista, obtenemos las canciones del artista
-                var canciones = GetSongsByArtist(userName);
+                // Obtener el usuario real de la API
+                var usuario = Crud<Usuario>.GetById(userId);
+                if (usuario == null)
+                {
+                    TempData["ErrorMessage"] = "Usuario no encontrado";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                // Obtener canciones del usuario si es artista
+                List<Cancion> canciones = new List<Cancion>();
+                if (usuario.Rol?.ToLower() == "artista")
+                {
+                    try
+                    {
+                        var todasLasCanciones = Crud<Cancion>.GetAll();
+                        canciones = todasLasCanciones?.Where(c => c.UsuarioId == userId).ToList() ?? new List<Cancion>();
+                    }
+                    catch (Exception)
+                    {
+                        canciones = new List<Cancion>();
+                    }
+                }
+
+                // Obtener plan de suscripción si es cliente
+                string planNombre = "Free";
+                if (usuario.Rol?.ToLower() == "cliente")
+                {
+                    try
+                    {
+                        var suscripciones = Crud<Suscripcion>.GetAll();
+                        var suscripcionActiva = suscripciones?.FirstOrDefault(s => s.UsuarioId == userId && s.Activa);
+
+                        if (suscripcionActiva != null)
+                        {
+                            var planes = Crud<Plan>.GetAll();
+                            var plan = planes?.FirstOrDefault(p => p.Id == suscripcionActiva.PlanId);
+                            planNombre = plan?.Nombre ?? "Free";
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        planNombre = "Free";
+                    }
+                }
+
+                // Asignar datos al ViewBag
+                ViewBag.ProfileImage = "/images/default-avatar.jpg";
+                ViewBag.Biography = $"Perfil de {usuario.Nombre}";
                 ViewBag.Canciones = canciones;
+                ViewBag.Plan = planNombre;
+                ViewBag.TotalCanciones = canciones.Count;
+                ViewBag.TotalReproducciones = canciones.Sum(c => c.numeroReproducciones);
+
+                return View(usuario);
             }
-            else if (user.Rol == "Cliente")
+            catch (Exception ex)
             {
-                // Si es un cliente, obtenemos el plan de suscripción
-                var plan = GetSubscriptionPlan(userName); // Obtiene el plan de suscripción del cliente
-                ViewBag.Plan = plan ?? "Free"; // Si no tiene plan, será "Free"
+                TempData["ErrorMessage"] = $"Error al cargar el perfil: {ex.Message}";
+                return RedirectToAction("Index", "Home");
             }
-
-            return View(user);  // Pasa el modelo de usuario para que se muestre
         }
-
-        // Métodos para obtener el usuario, las canciones y el plan de suscripción
-        private Usuario GetUserByName(string userName)
-        {
-            // Recuperar al usuario por su nombre (esto es solo un ejemplo)
-            return new Usuario
-            {
-                Nombre = userName,
-                Rol = "Usuario", // O "Cliente"
-            };
-        }
-
-
-
 
         [HttpPost]
         public IActionResult EditProfileImage(IFormFile profileImage)
         {
-            if (profileImage != null && profileImage.Length > 0)
+            if (!User.Identity.IsAuthenticated)
             {
-                // Define un nombre único para la imagen, por ejemplo con GUID
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
-
-                // Guarda la imagen en el directorio
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    profileImage.CopyTo(stream);
-                }
-
-                // Actualiza el modelo de usuario con la nueva imagen
-                var userName = User.Identity.Name;
-                var user = GetUserByName(userName);  // Este método obtiene el usuario
-                string ProfileImage = "/images/" + fileName;
-
-                // Redirigir al perfil actualizado
-                return RedirectToAction("Perfil");
+                return RedirectToAction("Login", "Account");
             }
 
-            // Si no hay archivo, regresar al perfil con mensaje de error
-            ModelState.AddModelError("", "No se pudo cargar la imagen");
-            return View("Perfil", User);  // Deberías retornar la vista de perfil
-        }
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                try
+                {
+                    // Validar que sea una imagen
+                    var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                    var extension = Path.GetExtension(profileImage.FileName).ToLower();
 
+                    if (!extensionesPermitidas.Contains(extension))
+                    {
+                        TempData["ErrorMessage"] = "Solo se permiten archivos de imagen (JPG, PNG, GIF)";
+                        return RedirectToAction("Perfil");
+                    }
+
+                    // Obtener ID del usuario
+                    var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                    if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                    {
+                        // Crear directorio si no existe
+                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+
+                        // Generar nombre único para la imagen
+                        var fileName = $"user_{userId}{extension}";
+                        var filePath = Path.Combine(uploadsFolder, fileName);
+
+                        // Guardar la imagen
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            profileImage.CopyTo(stream);
+                        }
+
+                        TempData["SuccessMessage"] = "Imagen de perfil actualizada correctamente";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Error al actualizar la imagen: {ex.Message}";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "No se seleccionó ninguna imagen";
+            }
+
+            return RedirectToAction("Perfil");
+        }
 
         private List<Cancion> GetSongsByArtist(string artistName)
         {
