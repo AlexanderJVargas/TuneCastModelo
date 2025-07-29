@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/TuneCast.MVC/wwwroot/css/perfil.css
+/TuneCast.MVC/wwwroot/css/perfil.css
+/TuneCast.MVC/wwwroot/css/perfil.css
